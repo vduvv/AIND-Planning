@@ -423,7 +423,7 @@ class PlanningGraph():
         # # TODO test for Inconsistent Effects between nodes
 
         if node_a1.action.__eq__(node_a2.action):
-            print("\n\n\nIn inconsistent_effects_mutex\n")
+            # print("\n\n\nIn inconsistent_effects_mutex\n")
             for anEffNode_a1 in node_a1.effnodes:
                 for anEffNode_a2 in node_a2.effnodes:
                     if anEffNode_a1.symbol == anEffNode_a2.symbol and anEffNode_a1.is_pos != anEffNode_a2.is_pos:
@@ -447,7 +447,7 @@ class PlanningGraph():
         """
         # TODO test for Interference between nodes
         if node_a1.action.__eq__(node_a2.action):
-            print("In interference_mutex")
+            # print("In interference_mutex")
             for anEffNode_a1 in node_a1.effnodes:
                 for aPreNode_a2 in node_a2.effnodes:
                     if anEffNode_a1.symbol == aPreNode_a2.symbol and anEffNode_a1.is_pos != aPreNode_a2.is_pos:
@@ -473,11 +473,12 @@ class PlanningGraph():
 
         # TODO test for Competing Needs between nodes
         if node_a1.action.__eq__(node_a2.action):
-            print("In competing_needs_mutex")
-            for aPreNode_a1 in node_a1.prenodes:
-                for aPreNode_a2 in node_a2.prenodes:
-                    if aPreNode_a1.symbol == aPreNode_a2.symbol and aPreNode_a1.is_pos != aPreNode_a2.is_pos:
+            # print("In competing_needs_mutex")
+            for parent1 in node_a1.parents:
+                for parent2 in node_a2.parents:
+                    if parent1.is_mutex(parent2):
                         return True
+
         return False
 
     def update_s_mutex(self, nodeset: set):
@@ -513,10 +514,12 @@ class PlanningGraph():
         :return: bool
         """
         # TODO test for negation between nodes
-        if node_s1.__eq__(node_s2):
-            print("In negation_mutex")
-            if node_s1.symbol == node_s2.symbol and node_s1.is_pos != node_s2.is_pos:
-                return True
+        # was checking for equality when I shouldn't
+        # found the hint in the forum and that did the trick
+        # if node_s1.__eq__(node_s2):
+        # print("In negation_mutex")
+        if node_s1.symbol == node_s2.symbol and node_s1.is_pos != node_s2.is_pos:
+            return True
 
         return False
 
@@ -537,7 +540,20 @@ class PlanningGraph():
         :return: bool
         """
         # TODO test for Inconsistent Support between nodes
-        print("In inconsistent_support_mutex")
+
+        # print("In inconsistent_support_mutex")
+        # for each parent action in state node 1
+        for action1 in node_s1.parents:
+            # for each parent action in state node 2
+            for action2 in node_s2.parents:
+                # check if those actions are mutex to each other
+                if action1.is_mutex(action2) or action2.is_mutex(action1):
+                    # make sure no single action can achieve both states
+                    if node_s1 in action2.children or node_s2 in action1.children:
+                        return False
+                    # if not, the state are inconsistent support mutex
+                    else:
+                        return True
         return False
 
     def h_levelsum(self) -> int:
@@ -548,5 +564,14 @@ class PlanningGraph():
         level_sum = 0
         # TODO implement
         # for each goal in the problem, determine the level cost, then add them together
-        print("In h_levelsum")
+        been_there_before = []
+        for aLevel in self.s_levels:
+            for aState in aLevel:
+                if aState in been_there_before:
+                    continue
+                else:
+                    been_there_before.append(aState)
+                    if aState.symbol in self.problem.goal:
+                        level_sum += 1
+                        # break
         return level_sum
