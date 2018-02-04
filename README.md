@@ -16,6 +16,7 @@ Instead, you will implement domain-independent heuristics.
 	- GIVEN: problems defined in classical PDDL (Planning Domain Definition Language)
 	- TODO: Implement the Python methods and functions as marked in `my_air_cargo_problems.py`
 	- TODO: Experiment and document metrics
+
 - Part 2 - Domain-independent heuristics:
 	- READ: applicable portions of the Russel/Norvig AIMA text
 	- TODO: Implement relaxed problem heuristic in `my_air_cargo_problems.py`

@@ -61,27 +61,26 @@ class AirCargoProblem(Problem):
             """
             loads = []
             for aCargo in self.cargos:
-                for anAirport in self.airports:
-                    for aPlane in self.planes:
-                        precond_pos = [expr("At({}, {})".format(aCargo, anAirport)),
-                                        expr("At({}, {})".format(aPlane, anAirport)),
-                                        # expr("Cargo({})".format(aCargo)),
-                                        # expr("Plane({})".format(aPlane)),
-                                        # expr("Airport({})".format(anAirport)),
+                for aPlane in self.planes:
+                    for anAirport in self.airports:
+                        precond_pos = [expr("At({}, {})".format(aCargo, anAirport))
+                                        , expr("At({}, {})".format(aPlane, anAirport))
+                                        # , expr("Cargo({})".format(aCargo))
+                                        # , expr("Plane({})".format(aPlane))
+                                        # , expr("Airport({})".format(anAirport))
                                         ]
-                        precond_neg = [expr("In({}, {})".format(aCargo, aPlane)),
-                                        # expr("Cargo({})".format(aPlane)),
-                                        # expr("Cargo({})".format(anAirport)),
-                                        # expr("Plane({})".format(aCargo)),
-                                        # expr("Plane({})".format(anAirport)),
-                                        # expr("Airport({})".format(aPlane)),
-                                        # expr("Airport({})".format(aCargo)),
+                        precond_neg = [expr("In({}, {})".format(aCargo, aPlane))
+                                        # , expr("Cargo({})".format(aPlane))
+                                        # , expr("Cargo({})".format(anAirport))
+                                        # , expr("Plane({})".format(aCargo))
+                                        # , expr("Plane({})".format(anAirport))
+                                        # , expr("Airport({})".format(aPlane))
+                                        # , expr("Airport({})".format(aCargo))
                                         ]
                         effect_add = [expr("In({}, {})".format(aCargo, aPlane))]
                         effect_rem = [expr("At({}, {})".format(aCargo, anAirport))]
                         load = Action(expr("Load({}, {}, {})".format(aCargo, aPlane, anAirport)),
-                                     [precond_pos, precond_neg],
-                                     [effect_add, effect_rem])
+                                     [precond_pos, precond_neg], [effect_add, effect_rem])
                         loads.append(load)
             return loads
 
@@ -94,25 +93,24 @@ class AirCargoProblem(Problem):
             for aCargo in self.cargos:
                 for anAirport in self.airports:
                     for aPlane in self.planes:
-                        precond_pos = [expr("In({}, {})".format(aCargo, aPlane)),
-                                        expr("At({}, {})".format(aPlane, anAirport)),
-                                        # expr("Cargo({})".format(aCargo)),
-                                        # expr("Plane({})".format(aPlane)),
-                                        # expr("Airport({})".format(anAirport)),
+                        precond_pos = [expr("In({}, {})".format(aCargo, aPlane))
+                                        , expr("At({}, {})".format(aPlane, anAirport))
+                                        # , expr("Cargo({})".format(aCargo))
+                                        # , expr("Plane({})".format(aPlane))
+                                        # , expr("Airport({})".format(anAirport))
                                         ]
-                        precond_neg = [expr("At({}, {})".format(aCargo, anAirport)),
-                                        # expr("Cargo({})".format(aPlane)),
-                                        # expr("Cargo({})".format(anAirport)),
-                                        # expr("Plane({})".format(aCargo)),
-                                        # expr("Plane({})".format(anAirport)),
-                                        # expr("Airport({})".format(aPlane)),
-                                        # expr("Airport({})".format(aCargo)),
+                        precond_neg = [expr("At({}, {})".format(aCargo, anAirport))
+                                        # , expr("Cargo({})".format(aPlane))
+                                        # , expr("Cargo({})".format(anAirport))
+                                        # , expr("Plane({})".format(aCargo))
+                                        # , expr("Plane({})".format(anAirport))
+                                        # , expr("Airport({})".format(aPlane))
+                                        # , expr("Airport({})".format(aCargo))
                                         ]
                         effect_add = [expr("At({}, {})".format(aCargo, anAirport))]
                         effect_rem = [expr("In({}, {})".format(aCargo, aPlane))]
-                        unload = Action(expr("Unload({}, {}, {})".format(aCargo, aPlane, anAirport)),
-                                     [precond_pos, precond_neg],
-                                     [effect_add, effect_rem])
+                        unload = Action(expr("Unload({}, {}, {})".format(aCargo, anAirport, aPlane)),
+                                     [precond_pos, precond_neg], [effect_add, effect_rem])
                         unloads.append(unload)
             return unloads
 
@@ -121,25 +119,23 @@ class AirCargoProblem(Problem):
             :return: list of Action objects
             """
             flys = []
-            for from_airport in self.airports:
-                for to_airport in self.airports:
-                    if from_airport != to_airport:
-                        for aPlane in self.planes:
-                            precond_pos = [expr("At({}, {})".format(aPlane, from_airport)),
-                                        # expr("Plane({})".format(aPlane)),
-                                        # expr("Airport({})".format(from_airport)),
-                                        # expr("Airport({})".format(to_airport)),
-                                            ]
-                            precond_neg = [expr("At({}, {})".format(aPlane, to_airport)),
-                                            ]
+            for aPlane in self.planes:
+                for from_airport in self.airports:
+                    for to_airport in self.airports:
+                        if from_airport != to_airport:
+                            precond_pos = [expr("At({}, {})".format(aPlane, from_airport))
+                                        # , expr("Plane({})".format(aPlane))
+                                        # , expr("Airport({})".format(from_airport))
+                                        # , expr("Airport({})".format(to_airport))
+                                        ]
+                            precond_neg = []
+                            #expr("At({}, {})".format(aPlane, to_airport))]
                             effect_add = [expr("At({}, {})".format(aPlane, to_airport))]
                             effect_rem = [expr("At({}, {})".format(aPlane, from_airport))]
                             fly = Action(expr("Fly({}, {}, {})".format(aPlane, from_airport, to_airport)),
-                                         [precond_pos, precond_neg],
-                                         [effect_add, effect_rem])
+                                         [precond_pos, precond_neg], [effect_add, effect_rem])
                             flys.append(fly)
             return flys
-
         return load_actions() + unload_actions() + fly_actions()
 
     def actions(self, state: str) -> list:
@@ -247,22 +243,25 @@ def air_cargo_p1() -> AirCargoProblem:
     cargos = ['C1', 'C2']
     planes = ['P1', 'P2']
     airports = ['JFK', 'SFO']
-    pos = [expr('At(C1, SFO)'),
-           expr('At(C2, JFK)'),
-           expr('At(P1, SFO)'),
-           expr('At(P2, JFK)'),
+    pos = [
+            expr('At(C1, SFO)'),
+            expr('At(C2, JFK)'),
+            expr('At(P1, SFO)'),
+            expr('At(P2, JFK)'),
            ]
-    neg = [expr('At(C2, SFO)'),
-           expr('In(C2, P1)'),
-           expr('In(C2, P2)'),
-           expr('At(C1, JFK)'),
-           expr('In(C1, P1)'),
-           expr('In(C1, P2)'),
-           expr('At(P1, JFK)'),
-           expr('At(P2, SFO)'),
+    neg = [
+            expr('At(C1, JFK)'),
+            expr('At(C2, SFO)'),
+            expr('At(P1, JFK)'),
+            expr('At(P2, SFO)'),
+            expr('In(C1, P1)'),
+            expr('In(C1, P2)'),
+            expr('In(C2, P1)'),
+            expr('In(C2, P2)'),
            ]
     init = FluentState(pos, neg)
-    goal = [expr('At(C1, JFK)'),
+    goal = [
+            expr('At(C1, JFK)'),
             expr('At(C2, SFO)'),
             ]
     return AirCargoProblem(cargos, planes, airports, init, goal)
@@ -272,39 +271,44 @@ def air_cargo_p2() -> AirCargoProblem:
     cargos = ['C1', 'C2', 'C3']
     planes = ['P1', 'P2', 'P3']
     airports = ['JFK', 'SFO', 'ATL']
-    pos = [expr('At(C1, SFO)'),
-           expr('At(C2, JFK)'),
-           expr('At(C3, ATL)'),
-           expr('At(P1, SFO)'),
-           expr('At(P2, JFK)'),
-           expr('At(P3, ATL)'),
+    pos = [
+            expr('At(C1, SFO)'),
+            expr('At(C2, JFK)'),
+            expr('At(C3, ATL)'),
+            expr('At(P1, SFO)'),
+            expr('At(P2, JFK)'),
+            expr('At(P3, ATL)')
            ]
-    neg = [expr('At(C2, SFO)'),
-           expr('At(C2, ATL)'),
-           expr('In(C2, P1)'),
-           expr('In(C2, P2)'),
-           expr('In(C2, P3)'),
-           expr('At(C1, JFK)'),
-           expr('At(C1, ATL)'),
-           expr('In(C1, P1)'),
-           expr('In(C1, P2)'),
-           expr('In(C1, P3)'),
-           expr('At(C3, JFK)'),
-           expr('At(C3, SFO)'),
-           expr('In(C3, P1)'),
-           expr('In(C3, P2)'),
-           expr('In(C3, P3)'),
-           expr('At(P1, JFK)'),
-           expr('At(P1, ATL)'),
-           expr('At(P2, SFO)'),
-           expr('At(P2, ATL)'),
-           expr('At(P3, JFK)'),
-           expr('At(P3, SFO)'),
+    neg = [
+            expr('At(C1, JFK)'),
+            expr('At(C1, ATL)'),
+            expr('At(C2, SFO)'),
+            expr('At(C2, ATL)'),
+            expr('At(C3, JFK)'),
+            expr('At(C3, SFO)'),
+
+            expr('At(P1, JFK)'),
+            expr('At(P1, ATL)'),
+            expr('At(P2, SFO)'),
+            expr('At(P2, ATL)'),
+            expr('At(P3, JFK)'),
+            expr('At(P3, SFO)'),
+
+            expr('In(C1, P1)'),
+            expr('In(C1, P2)'),
+            expr('In(C1, P3)'),
+            expr('In(C2, P1)'),
+            expr('In(C2, P2)'),
+            expr('In(C2, P3)'),
+            expr('In(C3, P1)'),
+            expr('In(C3, P2)'),
+            expr('In(C3, P3)')
            ]
     init = FluentState(pos, neg)
-    goal = [expr('At(C1, JFK)'),
+    goal = [
+            expr('At(C1, JFK)'),
             expr('At(C2, SFO)'),
-            expr('At(C3, SFO)'),
+            expr('At(C3, SFO)')
             ]
     return AirCargoProblem(cargos, planes, airports, init, goal)
 
@@ -313,44 +317,48 @@ def air_cargo_p3() -> AirCargoProblem:
     cargos = ['C1', 'C2', 'C3', 'C4']
     planes = ['P1', 'P2']
     airports = ['JFK', 'SFO', 'ATL', 'ORD']
-    pos = [expr('At(C1, SFO)'),
-           expr('At(C2, JFK)'),
-           expr('At(C3, ATL)'),
-           expr('At(C4, ORD)'),
-           expr('At(P1, SFO)'),
-           expr('At(P2, JFK)'),
+    pos = [
+            expr('At(C1, SFO)'),
+            expr('At(C2, JFK)'),
+            expr('At(C3, ATL)'),
+            expr('At(C4, ORD)'),
+            expr('At(P1, SFO)'),
+            expr('At(P2, JFK)')
            ]
-    neg = [expr('At(C2, SFO)'),
-           expr('At(C2, ATL)'),
-           expr('At(C2, ORD)'),
-           expr('In(C2, P1)'),
-           expr('In(C2, P2)'),
-           expr('At(C1, JFK)'),
-           expr('At(C1, ATL)'),
-           expr('At(C1, ORD)'),
-           expr('In(C1, P1)'),
-           expr('In(C1, P2)'),
-           expr('At(C3, JFK)'),
-           expr('At(C3, SFO)'),
-           expr('At(C3, ORD)'),
-           expr('In(C3, P1)'),
-           expr('In(C3, P2)'),
-           expr('At(C4, JFK)'),
-           expr('At(C4, SFO)'),
-           expr('At(C4, ATL)'),
-           expr('In(C4, P1)'),
-           expr('In(C4, P2)'),
-           expr('At(P1, JFK)'),
-           expr('At(P1, ATL)'),
-           expr('At(P1, ORD)'),
-           expr('At(P2, SFO)'),
-           expr('At(P2, ATL)'),
-           expr('At(P2, ORD)'),
+    neg = [
+            expr('At(C1, JFK)'),
+            expr('At(C1, ATL)'),
+            expr('At(C1, ORD)'),
+            expr('At(C2, SFO)'),
+            expr('At(C2, ATL)'),
+            expr('At(C2, ORD)'),
+            expr('At(C3, JFK)'),
+            expr('At(C3, SFO)'),
+            expr('At(C3, ORD)'),
+            expr('At(C4, JFK)'),
+            expr('At(C4, SFO)'),
+            expr('At(C4, ATL)'),
+            expr('At(P1, JFK)'),
+            expr('At(P1, ATL)'),
+            expr('At(P1, ORD)'),
+            expr('At(P2, SFO)'),
+            expr('At(P2, ATL)'),
+            expr('At(P2, ORD)'),
+
+            expr('In(C1, P1)'),
+            expr('In(C1, P2)'),
+            expr('In(C2, P1)'),
+            expr('In(C2, P2)'),
+            expr('In(C3, P1)'),
+            expr('In(C3, P2)'),
+            expr('In(C4, P1)'),
+            expr('In(C4, P2)')
            ]
     init = FluentState(pos, neg)
-    goal = [expr('At(C1, JFK)'),
-            expr('At(C2, SFO)'),
+    goal = [
+            expr('At(C1, JFK)'),
             expr('At(C3, JFK)'),
-            expr('At(C4, SFO)'),
+            expr('At(C2, SFO)'),
+            expr('At(C4, SFO)')
             ]
     return AirCargoProblem(cargos, planes, airports, init, goal)

@@ -565,13 +565,13 @@ class PlanningGraph():
         # TODO implement
         # for each goal in the problem, determine the level cost, then add them together
         been_there_before = []
-        for aLevel in self.s_levels:
+        for idx, aLevel in enumerate(self.s_levels):
             for aState in aLevel:
                 if aState in been_there_before:
                     continue
                 else:
                     been_there_before.append(aState)
                     if aState.symbol in self.problem.goal:
-                        level_sum += 1
+                        level_sum = idx
                         # break
         return level_sum
